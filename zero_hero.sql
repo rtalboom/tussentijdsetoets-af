@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 01 nov 2022 om 14:41
+-- Gegenereerd op: 15 sep 2023 om 12:43
 -- Serverversie: 10.4.24-MariaDB
 -- PHP-versie: 8.1.6
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ZeroHero`
+-- Database: `zero_hero`
 --
 
 -- --------------------------------------------------------
@@ -38,7 +38,10 @@ CREATE TABLE `doctrine_migration_versions` (
 --
 
 INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
-('DoctrineMigrations\\Version20221101124145', '2022-11-01 13:41:56', 64);
+('DoctrineMigrations\\Version20221101124145', '2022-11-01 13:41:56', 64),
+('DoctrineMigrations\\Version20230915103330', '2023-09-15 12:33:44', 86),
+('DoctrineMigrations\\Version20230915103828', '2023-09-15 12:38:37', 38),
+('DoctrineMigrations\\Version20230915104242', '2023-09-15 12:42:48', 158);
 
 -- --------------------------------------------------------
 
@@ -59,24 +62,35 @@ CREATE TABLE `messenger_messages` (
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `treatment`
+-- Tabelstructuur voor tabel `reservations`
 --
 
-CREATE TABLE `treatment` (
+CREATE TABLE `reservations` (
   `id` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `price` decimal(5,2) NOT NULL,
-  `amount` int(11) NOT NULL
+  `user_id` int(11) DEFAULT NULL,
+  `point_a` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `point_b` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_date_time` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `end_date_time` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Gegevens worden geëxporteerd voor tabel `treatment`
+-- Tabelstructuur voor tabel `user`
 --
 
-INSERT INTO `treatment` (`id`, `name`, `price`, `amount`) VALUES
-(1, 'knippen', '7.50', 3),
-(2, 'scheren', '12.00', 2),
-(3, 'kleuren', '35.75', 1);
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `email` varchar(180) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `roles` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '(DC2Type:json)',
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prefix` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `function` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexen voor geëxporteerde tabellen
@@ -98,10 +112,18 @@ ALTER TABLE `messenger_messages`
   ADD KEY `IDX_75EA56E016BA31DB` (`delivered_at`);
 
 --
--- Indexen voor tabel `treatment`
+-- Indexen voor tabel `reservations`
 --
-ALTER TABLE `treatment`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `reservations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_4DA239A76ED395` (`user_id`);
+
+--
+-- Indexen voor tabel `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`);
 
 --
 -- AUTO_INCREMENT voor geëxporteerde tabellen
@@ -114,10 +136,26 @@ ALTER TABLE `messenger_messages`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT voor een tabel `treatment`
+-- AUTO_INCREMENT voor een tabel `reservations`
 --
-ALTER TABLE `treatment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `reservations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT voor een tabel `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Beperkingen voor geëxporteerde tabellen
+--
+
+--
+-- Beperkingen voor tabel `reservations`
+--
+ALTER TABLE `reservations`
+  ADD CONSTRAINT `FK_4DA239A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
